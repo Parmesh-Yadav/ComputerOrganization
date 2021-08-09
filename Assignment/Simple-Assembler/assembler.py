@@ -54,74 +54,88 @@ def get_input():
     
     
     for line in input_list:
-        inst = line.split(' ')
+        inp = line.split(' ')
         #inst means instruction that the user gave
 
         if(inp[0] == "add"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
-            output_s = output_s + add(r0,r1,r2)
+            output_s = output_s + add(r1,r2,r3)
             output_s = output_s + "/n"
 
         elif(inp[0] == "sub"):
-            
-
-
-        elif(inp[0] == ""):
-
+            None
         
         
         elif(inp[0] == ""):
+            None
         
+        
+        elif(inp[0] == ""):
+            None
 
         
         elif(inp[0] == ""):
+            None
+
+
+        elif(inp[0] == ""):
+            None
+
+
+        elif(inp[0] == "div"):
+            r3 = inp[1]
+            r4 = inp[2]
+            output_s = output_s + divide(r3, r4)
+            output_s = output_s + "/n"
+
+
+
+        elif(inp[0] == "ls"):
+            r1 = inp[1]
+            v = inp[2]
+            v = int(v[1:])
+            output_s = output_s + leftshift(r1, v)
+            output_s = output_s + "/n"
+
+
+
+        elif(inp[0] == "rs"):
+            r1 = inp[1]
+            v = inp[2]
+            v = int(v[1:])
+            output_s = output_s + rightshift(r1, v)
+            output_s = output_s + "/n"
 
 
 
         elif(inp[0] == ""):
-
-
-
-        elif(inp[0] == ""):
-
+            None
 
 
         elif(inp[0] == ""):
-
-
-
-        elif(inp[0] == ""):
-
+            None
 
 
         elif(inp[0] == ""):
-
-
-
-        elif(inp[0] == ""):
-
+            None
 
 
         elif(inp[0] == ""):
-
-
-
-        elif(inp[0] == ""):
-
+            None
 
 
         elif(inp[0] == ""):
-
-
-
-        elif(inp[0] == ""):
-
+            None
 
 
         elif(inp[0] == ""):
+            None
 
+
+        elif(inp[0] == ""):
+            None
         
 
 
@@ -142,4 +156,52 @@ def add(r1,r2,r3):
     
     return machine_code
 
-#MARK: subtract function
+#MARK: division fucntion
+
+def divide(r3,r4):
+    # opcode(5) + unused(5) + r3(3) + r4(3)
+
+    opcode = op_commands['div']
+    unused = "0"*5
+
+    a = registers[r3] #first register opcode
+    b = registers[r4] #second register opcode
+    
+    machine_code = opcode + unused + a + b
+    
+    return machine_code
+
+
+#MARK: leftshift fucntion
+
+def leftshift(r1,v):
+    # opcode(5) + r1(3) + value(8)
+
+    opcode = op_commands['ls']
+    
+    a = registers[r1] #first register opcode
+    b = str(bin(v))
+    b = b[2:]
+    if len(b) != 8:
+        b = "0"*(8-len(b)) + b
+    
+    machine_code = opcode + a + b
+    
+    return machine_code
+
+
+#MARK: rightshift fucntion
+
+def rightshift(r1,v):
+    # opcode(5) + r1(3) + value(8)
+
+    opcode = op_commands['rs']
+    
+    a = registers[r1] #first register opcode
+    b = str(bin(v))
+    if len(b) != 8:
+        b = "0"*(8-len(b)) + b
+    
+    machine_code = opcode + a + b
+    
+    return machine_code
