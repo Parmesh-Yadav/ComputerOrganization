@@ -58,63 +58,63 @@ def get_input():
             r3 = inp[3]
             add(r0,r1,r2)
 
-        else if(inp[0] == "sub"):
+        elif(inp[0] == "sub"):
             
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
         
         
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
         
 
         
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
 
 
-        else if(inp[0] == ""):
+        elif(inp[0] == ""):
 
         
 
