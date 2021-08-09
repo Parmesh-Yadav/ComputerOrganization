@@ -35,7 +35,7 @@ registers = {
 }
 
 def main():
-    print(op_commands["add"])
+    get_input()
     
 
 if __name__ == '__main__':
@@ -65,15 +65,27 @@ def get_input():
             output_s = output_s + "/n"
 
         elif(inp[0] == "sub"):
-            None
-        
-        
-        elif(inp[0] == ""):
-            None
-        
-        
-        elif(inp[0] == ""):
-            None
+            r1 = inp[1]
+            r2 = inp[2]
+            r3 = inp[3]
+            output_s = output_s + sub(r1,r2,r3)
+            output_s = output_s + "/n"
+
+
+        elif(inp[0] == "mov"):
+            if(inp[2][0] == "$"):
+                r1 = inp[1]
+                imm = int(inp[2][1:]) # casting the value into an integer
+
+                output_s = output_s + move_immediate(r1, imm)
+                output_s = output_s + "/n"
+
+            else:
+                r1 = inp[1]
+                r2 = inp[2]
+                output_s = output_s + move_register(r1,r2)
+                output_s = output_s + "/n"
+
 
         
         elif(inp[0] == ""):
@@ -137,7 +149,7 @@ def get_input():
         elif(inp[0] == ""):
             None
         
-
+        
 
 #MARK: add function
 
@@ -155,6 +167,70 @@ def add(r1,r2,r3):
     machine_code = opcode + unused + a + b + c
     
     return machine_code
+
+
+
+
+#MARK: subtract function
+
+def sub(r1,r2,r3):
+    # r1 = r2 - r3
+    # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
+    opcode = op_commands["sub"]
+    unused = "00"
+
+    a = registers[r1] #first register opcode
+    b = registers[r2] #second register opcode
+    c = registers[r3] #third register opcode
+
+    machine_code = opcode + unused + a + b + c
+    return machine_code
+
+
+
+
+#MARK: move immediate
+
+def move_immediate(r1, imm):
+
+    # move the value imm into the register r1
+    # opcode(5) + reg1(3) + immediate_value(8)
+
+    opcode = op_commands["movi"]
+    
+    a = registers[r1] #register opcode
+    b = str(bin(imm))
+    b = b[2:]
+    if(len(b) != 8):
+        b = 0*(8-len(b)) + b
+
+    machine_code = opcode + a + b
+
+    return machine_code
+
+
+
+
+#MARK: move register
+
+def move_register(r1, r2):
+
+    # performs r1 = r2
+    # opcode(5) + unused(5) + r1(3) + r2(3)
+
+    opcode = op_commands["movr"]
+    unused = "00000"
+    a = registers[r1]
+    b = registers[r2]
+
+    machine_code = opcode + unused + a + b
+
+    return machine_code
+
+
+
+
+
 
 #MARK: division fucntion
 
