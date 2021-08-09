@@ -2,7 +2,7 @@ import sys
 
 
 
-global op_commands = {
+op_commands = {
     "add"  : "00000",  #add
     "sub"  : "00001",  #subtract
     "movi" : "00010",  #move immediate
@@ -24,13 +24,13 @@ global op_commands = {
     "hlt"  : "10011"   #halt
 }
 
-global registers = {
-    "R0":  "000"
-    "R1" : "001"
-    "R2" : "010"
-    "R3":  "011"
-    "R4" : "100"
-    "R5" : "101"
+registers = {
+    "R0":  "000",
+    "R1" : "001",
+    "R2" : "010",
+    "R3":  "011",
+    "R4" : "100",
+    "R5" : "101",
     "R6" : "110"
 }
 
@@ -48,15 +48,21 @@ def get_input():
     
     complete_input = sys.stdin.read()
     
-    for line in complete_input:
-        inst = line.split()
+    input_list = complete_input.split('/n')
+    
+    output_s = ""
+    
+    
+    for line in input_list:
+        inst = line.split(' ')
         #inst means instruction that the user gave
 
         if(inp[0] == "add"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
-            add(r0,r1,r2)
+            output_s = output_s + add(r0,r1,r2)
+            output_s = output_s + "/n"
 
         elif(inp[0] == "sub"):
             
