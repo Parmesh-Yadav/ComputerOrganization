@@ -34,6 +34,8 @@ registers = {
     "R6" : "110"
 }
 
+variables = {}
+
 def main():
     get_input()
     
@@ -52,12 +54,20 @@ def get_input():
     
     output_s = ""
     
+    count = len(input_list) + 1 #length of the number of instructions + 1. this will give us the position of the first variable
+
     
     for line in input_list:
         inp = line.split(' ')
         #inst means instruction that the user gave
 
-        if(inp[0] == "add"):
+        if(inp[0] == "var"):
+            #checking the first line if it is a variable
+
+            variables[inp[1]] = count #storing the location of the variable. location is an integer
+            count = count + 1 
+
+        elif(inp[0] == "add"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
@@ -87,9 +97,23 @@ def get_input():
                 output_s = output_s + "/n"
 
 
-        
-        elif(inp[0] == ""):
-            None
+
+        elif(inp[0] == "ld"):
+            
+            r1 = inp[1]
+            var = inp[2]
+
+            output_s = output_s + load(r1,var)
+            output_s = output_s + "/n"
+
+
+        elif (inp[0] == "st"):
+            r1 = inp[1]
+            var = inp[2]
+
+            output_s = output_s + store(r1,var)
+            output_s = output_s + "/n"
+
 
 
         elif(inp[0] == "mul"):
@@ -149,16 +173,23 @@ def get_input():
             output_s = output_s + And(r1,r2,r3)
             output_s = output_s + "/n"
 
-
-        elif(inp[0] == ""):
-            None
-
-
-        elif(inp[0] == ""):
-            None
+        elif(inp[0] == "not"):
+            r1 = inp[1]
+            r2 = inp[2]
+            output_s = output_s + inverse(r1,r2,r3)
+            output_s = output_s + "/n"
 
 
-        elif(inp[0] == ""):
+        elif(inp[0] == "cmp"):
+            r1 = inp[1]
+            r2 = inp[2]
+            output_s = output_s + compare(r1,r2,r3)
+            output_s = output_s + "/n"
+
+
+
+
+        elif(inp[0] == "jmp"):
             None
 
 
@@ -175,7 +206,7 @@ def get_input():
         
 
         elif(inp[0] == "hlt"):
-            output_s = output_s + hlt
+            output_s = output_s + hlt()
             output_s = output_s + "/n"
 
         
@@ -201,6 +232,8 @@ def add(r1,r2,r3):
 
 
 
+
+
 #MARK: subtract function
 
 def sub(r1,r2,r3):
@@ -215,6 +248,9 @@ def sub(r1,r2,r3):
 
     machine_code = opcode + unused + a + b + c
     return machine_code
+
+
+
 
 
 
@@ -241,6 +277,8 @@ def move_immediate(r1, imm):
 
 
 
+
+
 #MARK: move register
 
 def move_register(r1, r2):
@@ -256,6 +294,54 @@ def move_register(r1, r2):
     machine_code = opcode + unused + a + b
 
     return machine_code
+
+
+
+
+
+
+
+#MARK: load function
+
+def load(r1, var):
+    # opcode(5) + reg(3) + memory_address(8)
+
+    memory_addr_b = bin(variables[var])
+    memory_addr_b_s = str(memory_addr_b)[2:]
+
+    opcode = op_commands["ld"]
+    a = registers[r1]
+
+    machine_code = opcode + a + memory_addr_b_s
+
+    return machine_code
+
+
+
+
+
+
+#MARK: store function
+
+
+def store(r1, var):
+     # opcode(5) + reg(3) + memory_address(8)
+
+    memory_addr_b = bin(variables[var])
+    memory_addr_b_s = str(memory_addr_b)[2:]
+
+    opcode = op_commands["st"]
+    a = registers[r1]
+
+    machine_code = opcode + a + memory_addr_b_s
+
+    return machine_code
+
+
+
+
+
+
 
 #MARK: multiplication fucntion
 
@@ -277,6 +363,10 @@ def mul(r1,r2,r3):
 
 
 
+
+
+
+
 #MARK: division fucntion
 
 def divide(r3,r4):
@@ -291,6 +381,13 @@ def divide(r3,r4):
     machine_code = opcode + unused + a + b
     
     return machine_code
+
+
+
+
+
+
+
 
 
 #MARK: leftshift fucntion
@@ -311,6 +408,15 @@ def leftshift(r1,v):
     return machine_code
 
 
+
+
+
+
+
+
+
+
+
 #MARK: rightshift fucntion
 
 def rightshift(r1,v):
@@ -326,6 +432,13 @@ def rightshift(r1,v):
     machine_code = opcode + a + b
     
     return machine_code
+
+
+
+
+
+
+
 
 #MARK: exclusive or function
 
@@ -343,6 +456,11 @@ def xor(r1,r2,r3):
     machine_code = opcode + unused + a + b + c
     
     return machine_code
+
+
+
+
+
 
 #MARK: or function
 
@@ -362,6 +480,10 @@ def Or(r1,r2,r3):
     return machine_code
 
 
+
+
+
+
 #MARK: and function
 
 def And(r1,r2,r3):
@@ -378,6 +500,51 @@ def And(r1,r2,r3):
     machine_code = opcode + unused + a + b + c
     
     return machine_code
+
+
+
+
+
+
+#MARK: inverse function -- bitwise not
+
+def inverse(r1,r2):
+    #opcode(5) + unused(5) + r1(3) + r2(3)
+    opcode = op_commands["not"]
+
+    unused = "0" * 5
+    r1 = registers[r1]
+    r2 = registers[r2]
+
+    machine_code = opcode + unused + r1 + r2
+
+    return machine_code
+
+
+
+
+
+
+
+#MARK: compare function
+
+def compare(r1,r2):
+
+    #opcode(5) + unused(5) + r1(3) + r2(3)
+
+    opcode = op_commands["cmp"] 
+    unused = "0" * 5
+    r1 = registers[r1]
+    r2 = registers[r2]
+
+    machine_code = opcode + unused + r1 + r2
+
+    return machine_code
+
+
+
+
+
 
 #MARK: halt function
 
