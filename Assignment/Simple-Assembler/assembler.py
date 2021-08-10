@@ -162,8 +162,22 @@ def get_input():
             None
 
 
-        elif(inp[0] == ""):
+        elif(inp[0] == "jlt"):
             None
+        
+
+        elif(inp[0] == "jgt"):
+            None
+
+        
+        elif(inp[0] == "je"):
+            None
+        
+
+        elif(inp[0] == "hlt"):
+            output_s = output_s + hlt
+            output_s = output_s + "/n"
+
         
         
 
@@ -363,4 +377,17 @@ def And(r1,r2,r3):
     
     machine_code = opcode + unused + a + b + c
     
+    return machine_code
+
+#MARK: halt function
+
+def hlt():
+    #stops machine from executing
+    # opcode(5) + unused(11)
+
+    opcode = op_commands['hlt']
+    unused = "0"*11
+
+    machine_code = opcode + unused
+
     return machine_code
