@@ -92,8 +92,12 @@ def get_input():
             None
 
 
-        elif(inp[0] == ""):
-            None
+        elif(inp[0] == "mul"):
+            r1 = inp[1]
+            r2 = inp[2]
+            r3 = inp[3]
+            output_s = output_s + mul(r1,r2,r3)
+            output_s = output_s + "/n"
 
 
         elif(inp[0] == "div"):
@@ -122,16 +126,28 @@ def get_input():
 
 
 
-        elif(inp[0] == ""):
-            None
+        elif(inp[0] == "xor"):
+            r1 = inp[1]
+            r2 = inp[2]
+            r3 = inp[3]
+            output_s = output_s + xor(r1,r2,r3)
+            output_s = output_s + "/n"
 
 
-        elif(inp[0] == ""):
-            None
+        elif(inp[0] == "or"):
+            r1 = inp[1]
+            r2 = inp[2]
+            r3 = inp[3]
+            output_s = output_s + Or(r1,r2,r3)
+            output_s = output_s + "/n"
 
 
-        elif(inp[0] == ""):
-            None
+        elif(inp[0] == "and"):
+            r1 = inp[1]
+            r2 = inp[2]
+            r3 = inp[3]
+            output_s = output_s + And(r1,r2,r3)
+            output_s = output_s + "/n"
 
 
         elif(inp[0] == ""):
@@ -227,7 +243,22 @@ def move_register(r1, r2):
 
     return machine_code
 
+#MARK: multiplication fucntion
 
+def mul(r1,r2,r3):
+    # r1 = r2 * r3
+    # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
+
+    opcode = op_commands['mul']
+    unused = "00"
+
+    a = registers[r1] #first register opcode
+    b = registers[r2] #second register opcode
+    c = registers[r3] #third register opcode
+    
+    machine_code = opcode + unused + a + b + c
+    
+    return machine_code
 
 
 
@@ -237,7 +268,7 @@ def move_register(r1, r2):
 def divide(r3,r4):
     # opcode(5) + unused(5) + r3(3) + r4(3)
 
-    opcode = op_commands['div']
+    opcode =  op_commands['div']
     unused = "0"*5
 
     a = registers[r3] #first register opcode
@@ -279,5 +310,57 @@ def rightshift(r1,v):
         b = "0"*(8-len(b)) + b
     
     machine_code = opcode + a + b
+    
+    return machine_code
+
+#MARK: exclusive or function
+
+def xor(r1,r2,r3):
+    # r1 = r2 xor r3
+    # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
+
+    opcode = op_commands['xor']
+    unused = "00"
+
+    a = registers[r1] #first register opcode
+    b = registers[r2] #second register opcode
+    c = registers[r3] #third register opcode
+    
+    machine_code = opcode + unused + a + b + c
+    
+    return machine_code
+
+#MARK: or function
+
+def Or(r1,r2,r3):
+    # r1 = r2 | r3
+    # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
+
+    opcode = op_commands['or']
+    unused = "00"
+
+    a = registers[r1] #first register opcode
+    b = registers[r2] #second register opcode
+    c = registers[r3] #third register opcode
+    
+    machine_code = opcode + unused + a + b + c
+    
+    return machine_code
+
+
+#MARK: and function
+
+def And(r1,r2,r3):
+    # r1 = r2 & r3
+    # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
+
+    opcode = op_commands['and']
+    unused = "00"
+
+    a = registers[r1] #first register opcode
+    b = registers[r2] #second register opcode
+    c = registers[r3] #third register opcode
+    
+    machine_code = opcode + unused + a + b + c
     
     return machine_code
