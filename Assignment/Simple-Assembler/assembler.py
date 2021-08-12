@@ -54,7 +54,7 @@ def get_input():
     
     output_s = ""
     
-    count = len(input_list) + 1 #length of the number of instructions + 1. this will give us the position of the first variable
+    
 
     
     for line in input_list:
@@ -62,10 +62,8 @@ def get_input():
         #inst means instruction that the user gave
 
         if(inp[0] == "var"):
-            #checking the first line if it is a variable
 
-            variables[inp[1]] = count #storing the location of the variable. location is an integer
-            count = count + 1 
+            None
 
         elif(inp[0] == "add"):
             r1 = inp[1]
@@ -133,22 +131,12 @@ def get_input():
 
 
         elif(inp[0] == "ls"):
-            r1 = inp[1]
-            v = inp[2]
-            v = int(v[1:])
-            output_s = output_s + leftshift(r1, v)
-            output_s = output_s + "/n"
+            None
 
 
 
         elif(inp[0] == "rs"):
-            r1 = inp[1]
-            v = inp[2]
-            v = int(v[1:])
-            output_s = output_s + rightshift(r1, v)
-            output_s = output_s + "/n"
-
-
+           None
 
         elif(inp[0] == "xor"):
             r1 = inp[1]
@@ -305,17 +293,7 @@ def move_register(r1, r2):
 
 def load(r1, var):
     # opcode(5) + reg(3) + memory_address(8)
-
-    memory_addr_b = bin(variables[var])
-    memory_addr_b_s = str(memory_addr_b)[2:]
-
-    opcode = op_commands["ld"]
-    a = registers[r1]
-
-    machine_code = opcode + a + memory_addr_b_s
-
-    return machine_code
-
+    None
 
 
 
@@ -325,17 +303,7 @@ def load(r1, var):
 
 
 def store(r1, var):
-     # opcode(5) + reg(3) + memory_address(8)
-
-    memory_addr_b = bin(variables[var])
-    memory_addr_b_s = str(memory_addr_b)[2:]
-
-    opcode = op_commands["st"]
-    a = registers[r1]
-
-    machine_code = opcode + a + memory_addr_b_s
-
-    return machine_code
+    None 
 
 
 
