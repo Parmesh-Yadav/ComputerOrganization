@@ -148,12 +148,22 @@ def get_input():
 
 
         elif(inp[0] == "ls"):
-            None
+            r1 = inp[1]
+            v = int(inp[2][1:])
+            
+            output_s = output_s + leftshift(r1,v)
+            output_s = output_s + "/n"
+            
 
 
 
         elif(inp[0] == "rs"):
-           None
+            r1 = inp[1]
+            v = int(inp[2][1:])
+            
+            output_s = output_s + rightshift(r1,v)
+            output_s = output_s + "/n"
+           
 
         elif(inp[0] == "xor"):
             r1 = inp[1]
