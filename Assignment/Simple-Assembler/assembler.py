@@ -1,6 +1,14 @@
 import sys
 
-
+def count_var(input_list):
+    count = 0
+    for i in input_list:
+        line = i.split(' ')
+        if(line[0] == 'var'):
+            count += 1
+    return count
+            
+    
 
 op_commands = {
     "add"  : "00000",  #add
@@ -54,7 +62,8 @@ def get_input():
     
     output_s = ""
     
-    
+    var_count = count_var(input_list)
+    var_index = len(input_list) - var_count    
 
     
     for line in input_list:
@@ -100,16 +109,24 @@ def get_input():
             
             r1 = inp[1]
             var = inp[2]
+            bvar = str(bin(var_index))
+            bvar = bvar[2:]
+            variables[var] = bvar
+            var_index += 1
 
-            output_s = output_s + load(r1,var)
+            output_s = output_s + load(r1,bvar)
             output_s = output_s + "/n"
 
 
         elif (inp[0] == "st"):
             r1 = inp[1]
             var = inp[2]
+            bvar = str(bin(var_index))
+            bvar = bvar[2:]
+            variables[var] = bvar
+            var_index += 1
 
-            output_s = output_s + store(r1,var)
+            output_s = output_s + store(r1,bvar)
             output_s = output_s + "/n"
 
 
@@ -291,9 +308,16 @@ def move_register(r1, r2):
 
 #MARK: load function
 
-def load(r1, var):
+def load(r1, bvar):
     # opcode(5) + reg(3) + memory_address(8)
-    None
+    
+    opcode = op_commands['ld']
+    a = registers[r1]
+    v = bvar
+    
+    machine_code = opcode + a + v
+    
+    return machine_code
 
 
 
@@ -302,8 +326,16 @@ def load(r1, var):
 #MARK: store function
 
 
-def store(r1, var):
-    None 
+def store(r1, bvar):
+    # opcode(5) + reg(3) + memory_address(8)
+    
+    opcode = op_commands['st']
+    a = registers[r1]
+    v = bvar
+    
+    machine_code = opcode + a + v
+    
+    return machine_code
 
 
 
