@@ -65,16 +65,15 @@ def get_input():
     var_count = count_var(input_list)
     var_index = len(input_list) - var_count    
 
+    line_no = 0
     
     for line in input_list:
+        
         inp = line.split(' ')
         #inst means instruction that the user gave
 
-        if(inp[0] == "var"):
 
-            None
-
-        elif(inp[0] == "add"):
+        if(inp[0] == "add"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
@@ -223,6 +222,9 @@ def get_input():
         elif(inp[0] == "hlt"):
             output_s = output_s + hlt()
             output_s = output_s + "/n"
+        
+        if(inp[0] != "var"):
+            line_no += 1
 
         
         
