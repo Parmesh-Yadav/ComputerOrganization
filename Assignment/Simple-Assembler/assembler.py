@@ -217,11 +217,15 @@ def get_input():
 
 
         elif(inp[0] == "jlt"):
-            None
+            mem_add = inp[1]
+            output_s = output_s + jump_less(mem_add)
+            output_s = output_s + "/n"
         
 
         elif(inp[0] == "jgt"):
-            None
+            mem_add = inp[1]
+            output_s = output_s + jump_greater(mem_add)
+            output_s = output_s + "/n"
 
         
         elif(inp[0] == "je"):
@@ -562,6 +566,11 @@ def compare(r1,r2):
 
     return machine_code
 
+
+
+
+#MAR: Jump unconditional 
+
 def jump(mem_add):
     #opcode(5) + unused(3) + address(8)
     
@@ -574,6 +583,34 @@ def jump(mem_add):
     return machine_code
     
 
+
+
+#MARK: jump if less than
+def jump_less(mem_add):
+    #opcode(5) + unused(3) + address(8)
+    
+    opcode = op_commands["jlt"]
+    unused = "0" * 3
+    address = labels[mem_add]
+    
+    machine_code = opcode + unused + address
+
+    return machine_code
+
+
+
+#MARK: Jump if greater than
+
+def jump_greater(mem_add):
+    #opcode(5) + unused(3) + address(8)
+    
+    opcode = op_commands["jgt"]
+    unused = "0" * 3
+    address = labels[mem_add]
+    
+    machine_code = opcode + unused + address
+
+    return machine_code
 
 
 
