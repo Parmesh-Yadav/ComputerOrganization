@@ -43,6 +43,7 @@ registers = {
 }
 
 variables = {}
+labels = {}
 
 def main():
     get_input()
@@ -71,6 +72,12 @@ def get_input():
         
         inp = line.split(' ')
         #inst means instruction that the user gave
+        
+        if(inp[0][-1] == ':'):
+            line_no_b = str(bin(line_no))
+            line_no_b = line_no_b[2:]
+            labels[inp[0]] = line_no_b
+            inp.remove(inp[0])
 
 
         if(inp[0] == "add"):
