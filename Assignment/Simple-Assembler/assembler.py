@@ -211,7 +211,9 @@ def get_input():
 
 
         elif(inp[0] == "jmp"):
-            None
+            mem_add = inp[1]
+            output_s = output_s + jump(mem_add)
+            output_s = output_s + "/n"
 
 
         elif(inp[0] == "jlt"):
@@ -233,7 +235,7 @@ def get_input():
         if(inp[0] != "var"):
             line_no += 1
 
-        
+    print(output_s) 
         
 
 #MARK: add function
@@ -559,6 +561,18 @@ def compare(r1,r2):
     machine_code = opcode + unused + r1 + r2
 
     return machine_code
+
+def jump(mem_add):
+    #opcode(5) + unused(3) + address(8)
+    
+    opcode = op_commands["jmp"]
+    unused = "0" * 3
+    address = labels[mem_add]
+    
+    machine_code = opcode + unused + address
+
+    return machine_code
+    
 
 
 
