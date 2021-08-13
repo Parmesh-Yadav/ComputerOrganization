@@ -229,7 +229,9 @@ def get_input():
 
         
         elif(inp[0] == "je"):
-            None
+            mem_add = inp[1]
+            output_s = output_s + jump_equal(mem_add)
+            output_s = output_s + "/n"
         
 
         elif(inp[0] == "hlt"):
@@ -612,7 +614,18 @@ def jump_greater(mem_add):
 
     return machine_code
 
+#MARK: Jump if equal
 
+def jump_equal(mem_add):
+    #opcode(5) + unused(3) + address(8)
+    
+    opcode = op_commands["je"]
+    unused = "0" * 3
+    address = labels[mem_add]
+    
+    machine_code = opcode + unused + address
+
+    return machine_code
 
 
 
