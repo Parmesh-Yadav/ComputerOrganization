@@ -19,7 +19,7 @@ op_commands = {
     "movi" : "00010",  #move immediate
     "movr" : "00011",  #move register
     "ld"   : "00100",  #load
-    "st"   : "00100",  #store
+    "st"   : "00101",  #store
     "mul"  : "00110",  #multiply
     "div"  : "00111",  #division
     "rs"   : "01000",  #right shift
@@ -52,12 +52,15 @@ labels = {}
 def get_labels(input_list):
     
     line_no = 0
+    
     for line in input_list:
 
         inp = line.split(' ')
 
         if(len(inp[0])!=0 and inp[0][-1] == ':'):
+
             line_no_b = str(bin(line_no))
+            
             line_no_b = line_no_b[2:]
 
             if len(line_no_b) != 8:
@@ -68,7 +71,9 @@ def get_labels(input_list):
 
             labels[label] = line_no_b
 
-        line_no += 1
+        if(inp[0] != "var"):
+            line_no += 1
+
 
 
 
@@ -80,9 +85,18 @@ def get_input():
     input_list = complete_input.split('\n')
     
     output_s = ""
-    
+    # input_list = []
+    # while(True):
+    #     x = input()
+
+    #     if(x ==  "hlt"):
+    #         break
+
+    #     input_list.append(x)
+
+
     var_count = count_var(input_list)
-    var_index = len(input_list) - var_count    
+    var_index = len(input_list) - var_count 
 
     line_no = 0
 
@@ -149,6 +163,8 @@ def get_input():
             var = inp[2]
             bvar = str(bin(var_index))
             bvar = bvar[2:]
+
+            # print(var_index, var_count, len(input_list))
 
             if(len(bvar) != 8):
                 bvar = ("0" * (8-len(bvar)) ) + bvar
