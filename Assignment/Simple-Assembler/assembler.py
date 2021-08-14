@@ -3,9 +3,12 @@ import sys
 def count_var(input_list):
     count = 0
     for i in input_list:
+
         line = i.split(' ')
+
         if(line[0] == 'var'):
             count += 1
+
     return count
             
     
@@ -39,18 +42,33 @@ registers = {
     "R3":  "011",
     "R4" : "100",
     "R5" : "101",
-    "R6" : "110"
+    "R6" : "110",
+    "FLAGS": "111"
 }
 
 variables = {}
 labels = {}
 
-def main():
-    get_input()
+def get_labels(input_list):
     
+    line_no = 0
+    for line in input_list:
 
-if __name__ == '__main__':
-    main()
+        inp = line.split(' ')
+
+        if(len(inp[0])!=0 and inp[0][-1] == ':'):
+            line_no_b = str(bin(line_no))
+            line_no_b = line_no_b[2:]
+
+            if len(line_no_b) != 8:
+                line_no_b = "0"*(8-len(line_no_b)) + line_no_b
+
+            label = inp[0]
+            label = label[:-1]
+
+            labels[label] = line_no_b
+
+        line_no += 1
 
 
 
@@ -59,7 +77,7 @@ def get_input():
     
     complete_input = sys.stdin.read()
     
-    input_list = complete_input.split('/n')
+    input_list = complete_input.split('\n')
     
     output_s = ""
     
@@ -67,47 +85,44 @@ def get_input():
     var_index = len(input_list) - var_count    
 
     line_no = 0
+
+    get_labels(input_list)
     
     for line in input_list:
         
         inp = line.split(' ')
-        #inst means instruction that the user gave
         
-        if(inp[0][-1] == ':'):
-            line_no_b = str(bin(line_no))
-            line_no_b = line_no_b[2:]
-            labels[inp[0]] = line_no_b
+        if(len(inp[0])!=0 and inp[0][-1] == ':'):
             inp.remove(inp[0])
-
 
         if(inp[0] == "add"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + add(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
         elif(inp[0] == "sub"):
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + sub(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "mov"):
-            if(inp[2][0] == "$"):
-                r1 = inp[1]
-                imm = int(inp[2][1:]) # casting the value into an integer
 
+            if(inp[2][0] == "$"):
+                imm = int(inp[2][1:]) # casting the value into an integer
+                r1 = inp[1]
                 output_s = output_s + move_immediate(r1, imm)
-                output_s = output_s + "/n"
+                output_s = output_s + "\n"
 
             else:
                 r1 = inp[1]
                 r2 = inp[2]
                 output_s = output_s + move_register(r1,r2)
-                output_s = output_s + "/n"
+                output_s = output_s + "\n"
 
 
 
@@ -117,11 +132,16 @@ def get_input():
             var = inp[2]
             bvar = str(bin(var_index))
             bvar = bvar[2:]
+            
+
+            if(len(bvar) != 8):
+                bvar = ("0" * (8-len(bvar)) ) + bvar
+
             variables[var] = bvar
             var_index += 1
 
             output_s = output_s + load(r1,bvar)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif (inp[0] == "st"):
@@ -129,11 +149,15 @@ def get_input():
             var = inp[2]
             bvar = str(bin(var_index))
             bvar = bvar[2:]
+
+            if(len(bvar) != 8):
+                bvar = ("0" * (8-len(bvar)) ) + bvar
+
             variables[var] = bvar
             var_index += 1
 
-            output_s = output_s + store(r1,bvar)
-            output_s = output_s + "/n"
+            output_s = output_s + store(r1,var)
+            output_s = output_s + "\n"
 
 
 
@@ -142,14 +166,14 @@ def get_input():
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + mul(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "div"):
             r3 = inp[1]
             r4 = inp[2]
             output_s = output_s + divide(r3, r4)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
 
@@ -158,7 +182,7 @@ def get_input():
             v = int(inp[2][1:])
             
             output_s = output_s + leftshift(r1,v)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
             
 
 
@@ -168,7 +192,7 @@ def get_input():
             v = int(inp[2][1:])
             
             output_s = output_s + rightshift(r1,v)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
            
 
         elif(inp[0] == "xor"):
@@ -176,7 +200,7 @@ def get_input():
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + xor(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "or"):
@@ -184,7 +208,7 @@ def get_input():
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + Or(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "and"):
@@ -192,20 +216,20 @@ def get_input():
             r2 = inp[2]
             r3 = inp[3]
             output_s = output_s + And(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
         elif(inp[0] == "not"):
             r1 = inp[1]
             r2 = inp[2]
             output_s = output_s + inverse(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "cmp"):
             r1 = inp[1]
             r2 = inp[2]
-            output_s = output_s + compare(r1,r2,r3)
-            output_s = output_s + "/n"
+            output_s = output_s + compare(r1,r2)
+            output_s = output_s + "\n"
 
 
 
@@ -213,35 +237,36 @@ def get_input():
         elif(inp[0] == "jmp"):
             mem_add = inp[1]
             output_s = output_s + jump(mem_add)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
 
         elif(inp[0] == "jlt"):
             mem_add = inp[1]
             output_s = output_s + jump_less(mem_add)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
         
 
         elif(inp[0] == "jgt"):
             mem_add = inp[1]
             output_s = output_s + jump_greater(mem_add)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
 
         
         elif(inp[0] == "je"):
             mem_add = inp[1]
             output_s = output_s + jump_equal(mem_add)
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
         
 
         elif(inp[0] == "hlt"):
             output_s = output_s + hlt()
-            output_s = output_s + "/n"
+            output_s = output_s + "\n"
         
         if(inp[0] != "var"):
             line_no += 1
 
-    print(output_s) 
+    print(output_s)
+
         
 
 #MARK: add function
@@ -250,7 +275,7 @@ def add(r1,r2,r3):
     # r1 = r2 + r3
     # opcode(5) + unused(2) + r1(3) + r2(3) + r3(3)
 
-    opcode = "00001"
+    opcode = op_commands["add"]
     unused = "00"
 
     a = registers[r1] #first register opcode
@@ -300,7 +325,7 @@ def move_immediate(r1, imm):
     b = str(bin(imm))
     b = b[2:]
     if(len(b) != 8):
-        b = 0*(8-len(b)) + b
+        b = ("0" * (8-len(b)) ) + b
 
     machine_code = opcode + a + b
 
@@ -353,12 +378,12 @@ def load(r1, bvar):
 #MARK: store function
 
 
-def store(r1, bvar):
+def store(r1, var):
     # opcode(5) + reg(3) + memory_address(8)
     
     opcode = op_commands['st']
     a = registers[r1]
-    v = bvar
+    v = variables[var]
     
     machine_code = opcode + a + v
     
@@ -433,10 +458,6 @@ def leftshift(r1,v):
     machine_code = opcode + a + b
     
     return machine_code
-
-
-
-
 
 
 
@@ -641,3 +662,12 @@ def hlt():
     machine_code = opcode + unused
 
     return machine_code
+
+
+
+def main():
+    get_input()
+    
+
+if __name__ == '__main__':
+    main()
