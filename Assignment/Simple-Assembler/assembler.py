@@ -75,7 +75,39 @@ def get_labels(input_list):
             line_no += 1
 
 
+def check_halt_as_last(input_list):
+    last_line = input_list[-1].split(' ')
+    if(last_line[0] == "hlt"):
+        return False
+    print('hlt not being used as the last instruction')
+    return True
 
+def count_halt(input_list):
+    count = 0
+    for line in input_list:
+        inp = line.split(' ')
+        if inp[0] == 'hlt':
+            count += 1
+    if count == 1:
+        return False
+    print('There are ' + str(count) + 'Halt instructions')
+   
+def var_beg(input_list):
+    var_occ = -1
+    instr_occ = 0
+    line_no = 0
+    for line in input_list:
+        inp = line.split(' ')
+        if inp[0] == 'var':
+            var_occ = line_no
+            continue
+        else:
+            instr_occ = line_no
+            break
+    if(var_occ < instr_occ):
+        return False
+    print("Invalid variable declaration")
+    return True      
 
 
 def get_input():
@@ -85,16 +117,9 @@ def get_input():
     input_list = complete_input.split('\n')
     
     output_s = ""
-    # input_list = []
-    # while(True):
-    #     x = input()
-
-    #     if(x ==  "hlt"):
-    #         break
-
-    #     input_list.append(x)
-
-
+    error = False
+    error = check_halt_as_last(input_list) or count_halt(input_list) or var_beg(input_list)
+    
     var_count = count_var(input_list)
     var_index = len(input_list) - var_count 
 
@@ -102,6 +127,8 @@ def get_input():
 
     get_labels(input_list)
     
+    if error == True:
+        return None
     for line in input_list:
         
         inp = line.split(' ')
@@ -113,6 +140,11 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + add(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -120,6 +152,12 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
+            
             output_s = output_s + sub(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -129,12 +167,26 @@ def get_input():
             if(inp[2][0] == "$"):
                 imm = int(inp[2][1:]) # casting the value into an integer
                 r1 = inp[1]
+                
+                if r1 == 'FLAGS':
+                    print('Illegal use of FLAGS register')
+                    break
+                
+                if imm>255 or imm<0:
+                    print("Illegal Immediate value")
+                    break
+                
                 output_s = output_s + move_immediate(r1, imm)
                 output_s = output_s + "\n"
 
             else:
                 r1 = inp[1]
                 r2 = inp[2]
+                
+                if r1 == 'FLAGS':
+                    print('Illegal use of FLAGS register')
+                    break
+                
                 output_s = output_s + move_register(r1,r2)
                 output_s = output_s + "\n"
 
@@ -144,6 +196,11 @@ def get_input():
             
             r1 = inp[1]
             var = inp[2]
+            
+            if r1 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             bvar = str(bin(var_index))
             bvar = bvar[2:]
             
@@ -161,6 +218,11 @@ def get_input():
         elif (inp[0] == "st"):
             r1 = inp[1]
             var = inp[2]
+            
+            if r1 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             bvar = str(bin(var_index))
             bvar = bvar[2:]
 
@@ -181,6 +243,11 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + mul(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -188,6 +255,11 @@ def get_input():
         elif(inp[0] == "div"):
             r3 = inp[1]
             r4 = inp[2]
+            
+            if r3 == 'FLAGS' or r4 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + divide(r3, r4)
             output_s = output_s + "\n"
 
@@ -196,6 +268,14 @@ def get_input():
         elif(inp[0] == "ls"):
             r1 = inp[1]
             v = int(inp[2][1:])
+            
+            if r1 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
+            if v>255 or v<0:
+                    print("Illegal Immediate value")
+                    break
             
             output_s = output_s + leftshift(r1,v)
             output_s = output_s + "\n"
@@ -207,6 +287,14 @@ def get_input():
             r1 = inp[1]
             v = int(inp[2][1:])
             
+            if r1 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
+            if v>255 or v<0:
+                    print("Illegal Immediate value")
+                    break
+            
             output_s = output_s + rightshift(r1,v)
             output_s = output_s + "\n"
            
@@ -215,6 +303,11 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + xor(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -223,6 +316,11 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + Or(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -231,12 +329,22 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + And(r1,r2,r3)
             output_s = output_s + "\n"
 
         elif(inp[0] == "not"):
             r1 = inp[1]
             r2 = inp[2]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + inverse(r1,r2,r3)
             output_s = output_s + "\n"
 
@@ -244,6 +352,11 @@ def get_input():
         elif(inp[0] == "cmp"):
             r1 = inp[1]
             r2 = inp[2]
+            
+            if r1 == 'FLAGS' or r2 == 'FLAGS':
+                print('Illegal use of FLAGS register')
+                break
+            
             output_s = output_s + compare(r1,r2)
             output_s = output_s + "\n"
 
@@ -281,7 +394,8 @@ def get_input():
         if(inp[0] != "var"):
             line_no += 1
 
-    print(output_s)
+    else:
+        print(output_s)
 
         
 
