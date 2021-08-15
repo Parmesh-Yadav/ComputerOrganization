@@ -25,7 +25,8 @@ op_commands = {
     "rs"   : "01000",  #right shift
     "ls"   : "01001",  #left shift
     "xor"  : "01010",  #bitwise exclusive OR
-    "or"   : "01011",  #bitwise AND
+    "or"   : "01011",  #bitwise OR
+    "and"  : "01100",  #bitwise AND  
     "not"  : "01101",  #bitwise NOT
     "cmp"  : "01110",  #compare
     "jmp"  : "01111",  #jump (unconditional)
@@ -75,23 +76,50 @@ def get_labels(input_list):
             line_no += 1
 
 
+
+
+def get_variables(input_list):
+    for line in input_list:
+        inp = line.split(' ')
+
+        if inp[0] == 'var' and len(inp) !=1 :
+            
+            variables[inp[1]] = 0
+    
+
+
 def check_halt_as_last(input_list):
     last_line = input_list[-1].split(' ')
+
     if(last_line[0] == "hlt"):
         return False
+
+    elif(len(last_line[0]) !=0 and last_line[0][-1] == ':'):
+        if(last_line[1] == "hlt"):
+            return False
+
     print('hlt not being used as the last instruction')
     return True
 
 def count_halt(input_list):
     count = 0
+
     for line in input_list:
         inp = line.split(' ')
         if inp[0] == 'hlt':
             count += 1
+
+        elif(len(inp[0]) !=0 and inp[0][-1] == ':'):
+            if(len(inp) !=1 and inp[1] == "hlt"):
+                count+=1
+
     if count == 1:
         return False
-    print('There are ' + str(count) + 'Halt instructions')
-   
+    print('There are ' + str(count) + ' Halt instructions')
+    return True
+
+
+
 def var_beg(input_list):
     var_occ = -1
     instr_occ = 0
@@ -100,14 +128,41 @@ def var_beg(input_list):
         inp = line.split(' ')
         if inp[0] == 'var':
             var_occ = line_no
-            continue
-        else:
+            break
+        line_no += 1
+    
+    line_no = 0
+    for line in input_list:
+        inp = line.split(' ')
+
+        if(inp[0] != 'var'):
             instr_occ = line_no
             break
+
+        line_no += 1
+
     if(var_occ < instr_occ):
         return False
+
     print("Invalid variable declaration")
+
     return True      
+
+
+def check_label(input_list):
+    for line in input_list:
+        inp = line.split(' ')
+
+        if(inp[0] in ["jmp", "jgt", "jlt", "je"]):
+            if inp[1] not in labels.keys():
+                print("invalid label use")
+                return True
+                
+
+    return False
+
+
+
 
 
 def get_input():
@@ -115,31 +170,64 @@ def get_input():
     complete_input = sys.stdin.read()
     
     input_list = complete_input.split('\n')
+
+    
+    # input_list = []
+    # while(True):
+    #     x = input()
+
+    #     if(x ==  "hlt"):
+    #         break
+        
+    #     input_list.append(x)
+
     
     output_s = ""
     error = False
-    error = check_halt_as_last(input_list) or count_halt(input_list) or var_beg(input_list)
+    get_labels(input_list)
+    get_variables(input_list)
+
+    error = count_halt(input_list) or check_halt_as_last(input_list) or var_beg(input_list) or check_label(input_list)
     
     var_count = count_var(input_list)
     var_index = len(input_list) - var_count 
 
     line_no = 0
 
-    get_labels(input_list)
     
+
+
+
     if error == True:
         return None
+
+
     for line in input_list:
         
         inp = line.split(' ')
         
+
         if(len(inp[0])!=0 and inp[0][-1] == ':'):
             inp.remove(inp[0])
 
+        if inp[0] not in op_commands.keys():
+            if inp[0] not in ['var', 'mov']:
+                print("Invalid command")
+                break
+
         if(inp[0] == "add"):
+
+            if len(inp) != 4:
+                print("invalid instruction type for type A")
+                break
+
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -152,6 +240,14 @@ def get_input():
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+            if len(inp) != 4:
+                print("invalid instruction type for type A")
+                break
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -164,9 +260,22 @@ def get_input():
 
         elif(inp[0] == "mov"):
 
+
             if(inp[2][0] == "$"):
+
+
+                if len(inp) != 3:
+                    print("invalid instruction type for type B")
+                    break
+
+
                 imm = int(inp[2][1:]) # casting the value into an integer
                 r1 = inp[1]
+
+            
+                if r1 not in registers.keys():
+                    print("Invalid register use")
+                    break
                 
                 if r1 == 'FLAGS':
                     print('Illegal use of FLAGS register')
@@ -180,8 +289,18 @@ def get_input():
                 output_s = output_s + "\n"
 
             else:
+
+                if len(inp) != 3:
+                    print("invalid instruction type for type C")
+                    break
+
                 r1 = inp[1]
                 r2 = inp[2]
+
+
+                if r1 not in registers.keys() or r2 not in registers.keys():
+                    print("Invalid register use")
+                    break
                 
                 if r1 == 'FLAGS':
                     print('Illegal use of FLAGS register')
@@ -193,12 +312,25 @@ def get_input():
 
 
         elif(inp[0] == "ld"):
+
+            if len(inp) != 3:
+                    print("invalid instruction type for type D")
+                    break
+
             
             r1 = inp[1]
             var = inp[2]
+
+            if r1 not in registers.keys() :
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS':
                 print('Illegal use of FLAGS register')
+                break
+
+            if var in labels.keys():
+                print("label being used as variable")
                 break
             
             bvar = str(bin(var_index))
@@ -207,6 +339,11 @@ def get_input():
 
             if(len(bvar) != 8):
                 bvar = ("0" * (8-len(bvar)) ) + bvar
+
+            if var not in variables.keys():
+                print("variable not declared")
+                break
+
 
             variables[var] = bvar
             var_index += 1
@@ -216,6 +353,11 @@ def get_input():
 
 
         elif (inp[0] == "st"):
+            
+            if len(inp) != 3:
+                    print("invalid instruction type for type D")
+                    break
+
             r1 = inp[1]
             var = inp[2]
             
@@ -223,6 +365,14 @@ def get_input():
                 print('Illegal use of FLAGS register')
                 break
             
+            if r1 not in registers.keys():
+                print("Invalid register use")
+                break
+
+            if var in labels.keys():
+                print("label being used as variable")
+                break
+
             bvar = str(bin(var_index))
             bvar = bvar[2:]
 
@@ -230,6 +380,12 @@ def get_input():
 
             if(len(bvar) != 8):
                 bvar = ("0" * (8-len(bvar)) ) + bvar
+
+
+            if var not in variables.keys():
+                print("variable not declared")
+                break
+
 
             variables[var] = bvar
             var_index += 1
@@ -240,9 +396,19 @@ def get_input():
 
 
         elif(inp[0] == "mul"):
+
+            if len(inp) != 4:
+                    print("invalid instruction type for type A")
+                    break
+
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -253,8 +419,18 @@ def get_input():
 
 
         elif(inp[0] == "div"):
+            
+            if len(inp) != 3:
+                    print("invalid instruction type for type C")
+                    break
+
+
             r3 = inp[1]
             r4 = inp[2]
+
+            if r4 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r3 == 'FLAGS' or r4 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -266,8 +442,17 @@ def get_input():
 
 
         elif(inp[0] == "ls"):
+
+            if len(inp) != 3:
+                    print("invalid instruction type for type B")
+                    break
+
             r1 = inp[1]
             v = int(inp[2][1:])
+
+            if r1 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -284,8 +469,17 @@ def get_input():
 
 
         elif(inp[0] == "rs"):
+
+            if len(inp) != 3:
+                    print("invalid instruction type for type B")
+                    break
+
             r1 = inp[1]
             v = int(inp[2][1:])
+
+            if r1 not in registers.keys() :
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -300,9 +494,19 @@ def get_input():
            
 
         elif(inp[0] == "xor"):
+
+            if len(inp) != 4:
+                    print("invalid instruction type for type A")
+                    break
+
+
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -313,9 +517,19 @@ def get_input():
 
 
         elif(inp[0] == "or"):
+            
+            if len(inp) != 4:
+                    print("invalid instruction type for type A")
+                    break
+
+
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -326,9 +540,19 @@ def get_input():
 
 
         elif(inp[0] == "and"):
+
+            if len(inp) != 4:
+                    print("invalid instruction type for type A")
+                    break
+
+
             r1 = inp[1]
             r2 = inp[2]
             r3 = inp[3]
+
+            if r1 not in registers.keys() or r2 not in registers.keys() or r3 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS' or r3 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -338,20 +562,38 @@ def get_input():
             output_s = output_s + "\n"
 
         elif(inp[0] == "not"):
+
+            if len(inp) != 3:
+                    print("invalid instruction type for type C")
+                    break
+
             r1 = inp[1]
             r2 = inp[2]
+
+            if r1 not in registers.keys() or r2 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS':
                 print('Illegal use of FLAGS register')
                 break
             
-            output_s = output_s + inverse(r1,r2,r3)
+            output_s = output_s + inverse(r1,r2)
             output_s = output_s + "\n"
 
 
         elif(inp[0] == "cmp"):
+
+            if len(inp) != 3:
+                    print("invalid instruction type for type C")
+                    break
+
             r1 = inp[1]
             r2 = inp[2]
+
+            if r1 not in registers.keys() or r2 not in registers.keys():
+                print("Invalid register use")
+                break
             
             if r1 == 'FLAGS' or r2 == 'FLAGS':
                 print('Illegal use of FLAGS register')
@@ -364,30 +606,72 @@ def get_input():
 
 
         elif(inp[0] == "jmp"):
+
+            if len(inp) != 2:
+                    print("invalid instruction type for type E")
+                    break
+
             mem_add = inp[1]
+
+            if mem_add in variables.keys():
+                print("variable being used as label")
+
             output_s = output_s + jump(mem_add)
             output_s = output_s + "\n"
 
 
         elif(inp[0] == "jlt"):
+            
+            if len(inp) != 2:
+                    print("invalid instruction type for type E")
+                    break
+
             mem_add = inp[1]
+
+            if mem_add in variables.keys():
+                print("variable being used as label")
+
             output_s = output_s + jump_less(mem_add)
             output_s = output_s + "\n"
         
 
         elif(inp[0] == "jgt"):
+
+            if len(inp) != 2:
+                    print("invalid instruction type for type E")
+                    break
+
+
             mem_add = inp[1]
+
+            if mem_add in variables.keys():
+                print("variable being used as label")
+           
             output_s = output_s + jump_greater(mem_add)
             output_s = output_s + "\n"
 
         
         elif(inp[0] == "je"):
+
+            if len(inp) != 2:
+                    print("invalid instruction type for type E")
+                    break
+
             mem_add = inp[1]
+            
+            if mem_add in variables.keys():
+                print("variable being used as label")
+
             output_s = output_s + jump_equal(mem_add)
             output_s = output_s + "\n"
         
 
         elif(inp[0] == "hlt"):
+
+            if len(inp) != 1:
+                    print("invalid instruction type for type F")
+                    break
+
             output_s = output_s + hlt()
             output_s = output_s + "\n"
         
