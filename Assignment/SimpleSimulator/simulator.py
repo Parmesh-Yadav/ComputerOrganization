@@ -86,8 +86,43 @@ def movr(line):
     
     registers[r1] = registers[r2]
     
+def rs(line):
+    
+    r1 = line[5:8]
+    v = line[8:]
+    
+    registers[r1] >> v
 
+def ls(line):
+    
+    r1 = line[5:8]
+    v = line[8:]
+    
+    registers[r1] << v
 
+def xor(line):
+
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:]
+
+    registers[r1] = registers[r2] ^ registers[r3]
+
+def Or(line):
+
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:]
+
+    registers[r1] = registers[r2] | registers[r3]
+
+def And(line):
+
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:]
+
+    registers[r1] = registers[r2] & registers[r3]
 
 def decode_command(line,pc):
     
@@ -108,6 +143,21 @@ def decode_command(line,pc):
     elif op_commands[opcode] == "movr":
         movr(line)
     
+    elif op_commands[opcode] == "rs":
+        rs(line)
+    
+    elif op_commands[opcode] == "ls":
+        ls(line)
+        
+    elif op_commands[opcode] == "xor":
+        xor(line)
+        
+    elif op_commands[opcode] == "or":
+        Or(line)
+
+    elif op_commands[opcode] == "and":
+        And(line)
+
     elif op_commands[opcode] == "hlt":
         halted = True
         #function not needed
