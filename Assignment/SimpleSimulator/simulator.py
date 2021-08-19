@@ -12,6 +12,13 @@ def convert_bs(v, i):
 
     return b
 
+def convert_int(v):
+     # v is the value to be converted from binary string to integer
+     b = int(v, 2)
+     
+     return b
+
+
 
 op_commands = {
     "00000"  : "add",  #add
@@ -46,6 +53,8 @@ registers = {
     "110" : 0,
     "111" : [0,0,0,0]
 }
+
+pc = 0
 
 
 def set_flag(final_value):
@@ -86,6 +95,71 @@ def movr(line):
     
     registers[r1] = registers[r2]
     
+def load(line):
+
+    r1 = line[5:8]
+    mem_add = line[8:]
+
+    registers[r1] = mem_add
+    return None
+
+def store(line):
+    r1 = line[5:8]
+    mem_add = line[8:]
+
+    registers[r1] = mem_add
+    return None
+
+
+def multiply(line):
+
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:]
+
+    registers[r1] = registers[r2] * registers[r3]
+
+
+def divide(line):
+    quotient = 0 #stores the quotient
+    remainder = 0 #stores the remainder
+
+    r2 = line[10:13] #first register in input
+    r3 = line[13:] #second register in input
+
+    remainder = registers[r2] // registers[r3] #floor division
+
+    quotient = registers[r2] % registers[r3] #storing the remainder
+
+    registers["000"] = quotient # R0 = quotient
+    registers["001"] = remainder # R1 = remainder
+
+
+def jump_less(line):
+    global pc
+    
+    if registers["111"][1] == "1":
+        #we need to update the program counter
+        pc += convert_int(line[8:]) #integer value of line[8:]
+
+    
+
+def jump_greater(line):
+    global pc
+
+    if registers["111"][2] == "1":
+
+        pc+=convert_int(line[8:]) #integer value of the line[8:]
+    
+
+def jump_equal(line):
+    global pc
+
+    if registers["111"][0] == "1":
+        pc+=convert_int(line[8:])
+
+
+
 def rs(line):
     
     r1 = line[5:8]
@@ -125,7 +199,7 @@ def And(line):
     registers[r1] = registers[r2] & registers[r3]
 
 def decode_command(line,pc):
-    
+
     halted = False
     PC = pc
 
@@ -157,6 +231,28 @@ def decode_command(line,pc):
 
     elif op_commands[opcode] == "and":
         And(line)
+
+    elif op_commands[opcode] == "ld":
+        load(line)
+
+    elif op_commands[opcode] == "st":
+        store(line)
+    
+    elif op_commands[opcode] == "mul":
+        multiply(line)
+
+    elif op_commands[opcode] == "div":
+        divide(line)
+
+    elif op_commands[opcode] == "jlt":
+        jump_less(line)
+    
+    elif op_commands[opcode] == "jgt":
+        jump_greater(line)
+    
+    elif op_commands[opcode] == "je":
+        jump_equal(line)
+
 
     elif op_commands[opcode] == "hlt":
         halted = True
@@ -193,7 +289,7 @@ def main():
     
     halted = False
 
-    pc = 0
+    global pc
 
     # for line in input_list:
     while not halted:
