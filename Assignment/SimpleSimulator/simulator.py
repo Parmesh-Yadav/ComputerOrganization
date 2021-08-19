@@ -1,3 +1,6 @@
+import sys
+
+
 def convert_bs(v, i):
     # v is the value to be converted from integer to binary string
     # i is the number of bits - 8 or 16.
@@ -41,8 +44,15 @@ registers = {
     "100" : 0,
     "101" : 0,
     "110" : 0,
-    "111" : "0000" 
+    "111" : [0,0,0,0]
 }
+
+
+def set_flag(final_value):
+    if final_value > 255:
+        registers["111"][0] = 1
+    
+    
 
 def add(line):
 
@@ -51,16 +61,62 @@ def add(line):
     r3 = line[13:]
 
     registers[r1] = registers[r2] + registers[r3]
+    set_flag(registers[r1])
+    
+def sub(line):
+    
+    r1 = line[7:10]
+    r2 = line[10:13]
+    r3 = line[13:]
+
+    registers[r1] = registers[r2] - registers[r3]
+    set_flag(registers[r1])
+    
+def movi(line):
+    
+    r1 = line[5:8]
+    v = line[8:]
+    
+    registers[r1] = v
+    
+def movr(line):
+    
+    r1 = line[10:13]
+    r2 = line[13:]
+    
+    registers[r1] = registers[r2]
+    
 
 
 
-def decode_command(line):
+def decode_command(line,pc):
+    
+    halted = False
+    PC = pc
 
-    opcode = line[0:6]
+    opcode = line[0:5]
 
     if op_commands[opcode] == "add":
         add(line)
+    
+    elif op_commands[opcode] == "sub":
+        sub(line)
+        
+    elif op_commands[opcode] == "movi":
+        movi(line)
+        
+    elif op_commands[opcode] == "movr":
+        movr(line)
+    
+    elif op_commands[opcode] == "hlt":
+        halted = True
+        #function not needed
+    
+    if PC == pc:
+        PC += 1
+    return halted, PC
 
+    
     
 
 def print_registers():
@@ -68,23 +124,39 @@ def print_registers():
     lst = registers.values()
 
     for x in lst:
-        print(convert_bs(x,16))
+        print(convert_bs(x,16),end = " ")
+        
+        
+        
+def print_flag_register():
+    flag = "0"*12
+    for i in registers["111"]:
+        flag = flag + str(i)
+    print(flag)
+    
 
 
 def main():
     
     complete_input = sys.stdin.read()
     input_list = complete_input.split('\n')
+    
+    halted = False
 
     pc = 0
 
-    for line in input_list:
+    # for line in input_list:
+    while not halted:
+        # if not halted:
+        line = input_list[pc]
         
-        decode_command(line)
-        
+        halted,updated_pc = decode_command(line,pc)
+            
         print(convert_bs(pc,8), end = " ")
-        
         print_registers()
+        print_flag_register()
+        
+        pc = updated_pc
 
 
 
