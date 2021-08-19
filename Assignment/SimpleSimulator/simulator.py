@@ -198,6 +198,27 @@ def And(line):
 
     registers[r1] = registers[r2] & registers[r3]
 
+def Not(line):
+    
+    r1 = line[10:13]
+    r2 = line[13:]
+    
+    registers[r1] = not registers[r2]
+
+def cmp(line):
+    
+    r1 = line[10:13]
+    r2 = line[13:]
+    
+    registers[r1] == registers[r2]
+    set_flag(registers[r1])
+
+def jump(line):
+    global pc
+    
+    #we need to update the program counter
+    pc += convert_int(line[8:]) #integer value of line[8:]
+
 def decode_command(line,pc):
 
     halted = False
@@ -243,6 +264,15 @@ def decode_command(line,pc):
 
     elif op_commands[opcode] == "div":
         divide(line)
+
+    elif op_commands[opcode] == "not":
+        Not(line)
+    
+    elif op_commands[opcode] == "cmp":
+        cmp(line)
+
+    elif op_commands[opcode] == "jmp":
+        jump(line)
 
     elif op_commands[opcode] == "jlt":
         jump_less(line)
