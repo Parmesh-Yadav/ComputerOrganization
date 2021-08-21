@@ -54,6 +54,9 @@ registers = {
     "111" : [0,0,0,0]
 }
 
+variables = []
+
+
 pc = 0
 
 
@@ -118,12 +121,16 @@ def load(line):
     r1 = line[5:8]
     mem_add = line[8:]
 
+    variables.append(mem_add)
+
     registers[r1] = mem_add
     return None
 
 def store(line):
     r1 = line[5:8]
     mem_add = line[8:]
+
+    variables.append(mem_add)
 
     registers[r1] = mem_add
     return None
@@ -185,14 +192,17 @@ def rs(line):
     r1 = line[5:8]
     v = line[8:]
     
-    registers[r1] >> v
+    registers[r1] = registers[r1] >> v
 
 def ls(line):
     
     r1 = line[5:8]
     v = line[8:]
     
-    registers[r1] << v
+    registers[r1] = registers[r1] << v
+
+
+
 
 def xor(line):
 
@@ -327,9 +337,10 @@ def print_registers():
     lst = registers.values()
 
     for x in lst:
-        print(convert_bs(x,16),end = " ")
-        
-        
+        if x != "111":
+            print(convert_bs(x,16),end = " ")
+    
+
         
 def print_flag_register():
     flag = "0"*12
@@ -337,6 +348,26 @@ def print_flag_register():
         flag = flag + str(i)
     print(flag)
     
+
+
+def memory_dump(input_list):
+   
+   count = 0
+
+   for line in input_list:
+       print(line)
+       count+=1
+
+   for var in variables:
+        print( ("0"*8) + var )
+        count+=1
+    
+   while count < 255:
+        print("0" * 16)
+        count+=1
+   
+   
+   return None
 
 
 def main():
@@ -358,6 +389,7 @@ def main():
         print(convert_bs(pc,8), end = " ")
         print_registers()
         print_flag_register()
+        memory_dump()
         
         pc = updated_pc
 
