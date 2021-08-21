@@ -57,9 +57,27 @@ registers = {
 pc = 0
 
 
-def set_flag(final_value):
+def set_flag_v(final_value):
     if final_value > 255:
         registers["111"][0] = 1
+        
+
+def set_flag_l(r1_v,r2_v):
+    if(r1_v < r2_v):
+        registers["111"][1] = 1
+        return True
+        
+        
+def set_flag_g(r1_v,r2_v):
+    if(r1_v > r2_v):
+        registers["111"][2] = 1
+        return True
+        
+        
+def set_flag_e(r1_v,r2_v):
+    if(r1_v == r2_v):
+        registers["111"][3] = 1
+        return True
     
     
 
@@ -70,7 +88,7 @@ def add(line):
     r3 = line[13:]
 
     registers[r1] = registers[r2] + registers[r3]
-    set_flag(registers[r1])
+    set_flag_v(registers[r1])
     
 def sub(line):
     
@@ -79,7 +97,7 @@ def sub(line):
     r3 = line[13:]
 
     registers[r1] = registers[r2] - registers[r3]
-    set_flag(registers[r1])
+    set_flag_v(registers[r1])
     
 def movi(line):
     
@@ -118,6 +136,8 @@ def multiply(line):
     r3 = line[13:]
 
     registers[r1] = registers[r2] * registers[r3]
+    
+    set_flag_v(registers[r1])
 
 
 def divide(line):
@@ -155,7 +175,7 @@ def jump_greater(line):
 def jump_equal(line):
     global pc
 
-    if registers["111"][0] == "1":
+    if registers["111"][3] == "1":
         pc+=convert_int(line[8:])
 
 
@@ -210,8 +230,15 @@ def cmp(line):
     r1 = line[10:13]
     r2 = line[13:]
     
-    registers[r1] == registers[r2]
-    set_flag(registers[r1])
+    # registers[r1] == registers[r2]
+    if(set_flag_l(registers[r1],registers[r2])):
+        None
+    elif(set_flag_g(registers[r1],registers[r2])):
+        None
+    elif(set_flag_e(registers[r1],registers[r2])):
+        None       
+    
+    
 
 def jump(line):
     global pc
