@@ -33,7 +33,7 @@ op_commands = {
     "jlt"  : "10000",  #jump (if less than)
     "jgt"  : "10001",  #jump (if greater to)
     "je"   : "10010",  #jump (if equal to)
-    "hlt"  : "10011"   #halt
+    "hlt"  : "10011",   #halt
 }
 
 registers = {
@@ -92,12 +92,15 @@ def check_halt_as_last(input_list, var_count):
    
     last_line = input_list[-1].split(' ')
 
-    if(last_line[0] == "hlt" or len(last_line) == 0): 
+    if(last_line[0] == "hlt"): 
         return False
 
     elif(len(last_line[0]) !=0 and last_line[0][-1] == ':'):
         if(last_line[1] == "hlt"):
             return False
+    
+    elif(input_list[-2] == "hlt"):
+        return False
 
     print('hlt not being used as the last instruction at line ', (len(input_list) - var_count - 1))
     return True
@@ -109,7 +112,7 @@ def count_halt(input_list, var_count):
 
     for line in input_list:
         inp = line.split(' ')
-        if inp[0] == 'hlt':
+        if inp[0] == "hlt":
             count += 1
 
         elif(len(inp[0]) !=0 and inp[0][-1] == ':'):
@@ -119,6 +122,7 @@ def count_halt(input_list, var_count):
     if count == 1:
         return False
     print('There are ' + str(count) + ' Halt instructions' + ' at line ' + str(len(input_list) - var_count - 1))
+   
     return True
 
 
@@ -183,7 +187,7 @@ def get_input():
     # while(True):
     #     x = input()
 
-    #     if(x ==  "hlt"):
+    #     if(x ==  "lol"):
     #         break
         
     #     input_list.append(x)
@@ -206,8 +210,6 @@ def get_input():
 
     
 
-
-
     if error == True:
         return None
 
@@ -220,7 +222,7 @@ def get_input():
         if(len(inp[0])!=0 and inp[0][-1] == ':'):
             inp.remove(inp[0])
 
-        if inp[0] not in op_commands.keys():
+        if inp[0] not in op_commands.keys() and inp[0] != "":
             if inp[0] not in ['var', 'mov']:
                 print("Invalid command ", " at line " , line_no)
                 break
